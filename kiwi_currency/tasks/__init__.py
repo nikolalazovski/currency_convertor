@@ -1,4 +1,5 @@
 from celery import Celery
+
 from kiwi_currency import create_app
 
 

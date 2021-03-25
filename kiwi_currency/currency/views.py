@@ -1,11 +1,13 @@
-from flask import Blueprint, request, current_app
+import datetime
+
+from flask import Blueprint, current_app, request
+
 from kiwi_currency import cache
 from kiwi_currency.currency.models import (
     ConversionRate,
     allowed_currencies,
     financial_multiplication,
 )
-import datetime
 
 bp = Blueprint("currency", __name__)
 

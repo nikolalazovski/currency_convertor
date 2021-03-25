@@ -7,13 +7,15 @@
     The service used to fetch the currency exchange rates is:
 
         https://free.currencyconverterapi.com/
-        
+
 """
 
-from kiwi_currency.tasks import create_celery
-from celery.schedules import crontab
-from kiwi_currency.currency.models import update_conversion_rates
 import os
+
+from celery.schedules import crontab
+
+from kiwi_currency.currency.models import update_conversion_rates
+from kiwi_currency.tasks import create_celery
 
 celery_app = create_celery()
 

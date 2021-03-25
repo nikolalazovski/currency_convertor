@@ -1,10 +1,9 @@
-from datetime import datetime
 import os
+from datetime import datetime
+
 import pytest
 
-from kiwi_currency import create_app
-from kiwi_currency import db, cache
-from kiwi_currency import init_db
+from kiwi_currency import cache, create_app, db, init_db
 from kiwi_currency.tinycache import TinyCache
 
 with open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb") as f:

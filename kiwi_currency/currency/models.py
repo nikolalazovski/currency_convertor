@@ -1,14 +1,19 @@
-from kiwi_currency import db
-from flask import current_app
 import datetime
-import requests
 import traceback
 from decimal import Decimal
 
+import requests
+from flask import current_app
+from flask_sqlalchemy.model import DefaultMeta
+
+from kiwi_currency import db
+
 allowed_currencies = ("CZK", "EUR", "USD", "PLN")
 
+BaseModel: DefaultMeta = db.Model
 
-class ConversionRate(db.Model):
+
+class ConversionRate(BaseModel):
     id = db.Column(db.Integer, primary_key=True)
     from_currency = db.Column(db.String(3), nullable=False, index=True)
     to_currency = db.Column(db.String(3), nullable=False)

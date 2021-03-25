@@ -1,11 +1,11 @@
-""" 
+"""
     TODO: Implement logging with config from the application
     TODO: Implement method init_app. See https://flask.palletsprojects.com/en/1.1.x/extensiondev/
 """
 
-from time import time
-import threading
 import functools
+import threading
+from time import time
 
 
 def synchronized(wrapped):

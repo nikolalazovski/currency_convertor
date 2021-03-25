@@ -1,5 +1,6 @@
-from kiwi_currency.tinycache import TinyCache
 import time
+
+from kiwi_currency.tinycache import TinyCache
 
 
 def test_expiry_time():

@@ -1,14 +1,15 @@
-import pytest
-import requests
 from decimal import Decimal
 
-from kiwi_currency import db, cache
+import pytest
+import requests
+
+from kiwi_currency import cache, db
 from kiwi_currency.currency.models import (
     ConversionRate,
     allowed_currencies,
+    financial_multiplication,
     get_conversion_rate,
     update_conversion_rates,
-    financial_multiplication,
 )
 
 

@@ -11,9 +11,6 @@ ENV PYTHONUNBUFFERED 1
 # upgrade pip
 RUN pip install --upgrade pip
 
-# copy the distribution 
+# copy the distribution
 COPY dist/kiwi_currency-1.0.6.dev0-py3-none-any.whl .
 RUN pip install kiwi_currency-1.0.6.dev0-py3-none-any.whl
-
-
-

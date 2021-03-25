@@ -1,9 +1,9 @@
-version: '3.7'
+version: "3.7"
 
 services:
   web:
     build:
-      context: . 
+      context: .
       dockerfile: kiwi_currency/Dockerfile
     command: gunicorn -w 4 -b 0.0.0.0:5000 kiwi_currency.wsgi:app
     ports:
@@ -25,12 +25,12 @@ services:
 
   celery-worker:
     build:
-      context: . 
+      context: .
       dockerfile: kiwi_currency/Dockerfile
     command: celery -A kiwi_currency.tasks.worker worker --loglevel=INFO -B
     env_file:
       - ./.env.dev
-    depends_on: 
+    depends_on:
       - broker-rabbitmq
 
 volumes:
