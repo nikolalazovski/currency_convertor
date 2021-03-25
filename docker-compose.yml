@@ -1,0 +1,37 @@
+version: '3.7'
+
+services:
+  web:
+    build:
+      context: . 
+      dockerfile: kiwi_currency/Dockerfile
+    command: gunicorn -w 4 -b 0.0.0.0:5000 kiwi_currency.wsgi:app
+    ports:
+      - 5000:5000
+    env_file:
+      - ./.env.dev
+
+  broker-rabbitmq:
+    image: "rabbitmq:3.7.14-management"
+    env_file:
+      - ./.env.dev
+
+  db:
+    image: postgres:12-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.dev
+
+  celery-worker:
+    build:
+      context: . 
+      dockerfile: kiwi_currency/Dockerfile
+    command: celery -A kiwi_currency.tasks.worker worker --loglevel=INFO -B
+    env_file:
+      - ./.env.dev
+    depends_on: 
+      - broker-rabbitmq
+
+volumes:
+  postgres_data:
