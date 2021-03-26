@@ -132,6 +132,7 @@ def update_conversion_rates():
     """
     Main method to update the conversion rates.
     """
+
     conversion_rates = {}
     try:
         # reading all exchange rates

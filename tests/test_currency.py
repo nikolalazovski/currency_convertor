@@ -171,6 +171,7 @@ def test_conversion_rate_timeout(app, monkeypatch):
 
 
 def test_update_conversion_rates_success(app, monkeypatch):
+
     new_allowed_currencies = ("USD", "EUR")
     expected_rates = {"USD_USD": 1.0, "USD_EUR": 0.84, "EUR_USD": 1.19, "EUR_EUR": 1.0}
 
@@ -178,6 +179,7 @@ def test_update_conversion_rates_success(app, monkeypatch):
         return expected_rates[f"{c1}_{c2}"]
 
     with app.app_context():
+
         monkeypatch.setattr(
             "kiwi_currency.currency.models.allowed_currencies", new_allowed_currencies
         )
@@ -213,6 +215,7 @@ def test_update_conversion_rates_fail(app, monkeypatch):
         db_res_before = ConversionRate.query.filter_by(
             from_currency="EUR", to_currency="USD", latest=1
         ).first()
+
         monkeypatch.setattr(
             "kiwi_currency.currency.models.allowed_currencies", new_allowed_currencies
         )
