@@ -1,10 +1,32 @@
 # Currency Exchange Rate Service
 
-This project is implemntation of a currency converter service.
+This project is an implemntation of a currency converter service.
+
+## REST API Definitions
+
+
+
+## Possible architectures
+
+There are two architectures considered:
+
+- First solution
+    * Flask for the REST API service + SQLAlchemy ORM for database access
+    * Gunicorn WSGI server
+    * Celery worker for periodic task for fetching the exchange rates + RabittMQ as a broker
+    * Postgres database to store the current and historical exchange rates
+    * Prometheus as a monitoring database
+    * Grafana as a monitoring dashboard service using the Prometheus as a data source
+
+- Second solution based in AWS (TO BE DONE!)
+    * API Gateway for REST API
+    * Lambda functions as hooks for the API
+    * Dynamo DB to store the exchange rates (DAX can be used as well to cache some of the queries)
+    * AWS EventBridge + Lambda to run the periodic task for fetching the exchange rates from external service
 
 ## Running the dev API REST service locally
 
-To run service locally for development purposes (without the other services), do the following in the folder where you have cloned this repository:
+To run service locally (not necessarily with other services), do the following in the folder where you have cloned this repository:
 
 ```bash
 $ python3 -m venv env
@@ -16,7 +38,7 @@ $ source env/bin/activate
 (env) $ flask run
 ```
 
-Keep in mind that this will leave the default sqlite database with no exchange rates.
+Keep in mind that this will leave the default sqlite database with no exchange rates records.
 If you want to connect to a different database system, please define the `DATABASE_URL` env variable.
 
 For example, if you have a postgres database, then the `DATABASE_URL` should be defined as:
@@ -27,7 +49,7 @@ DATABASE_URL=postgresql://[DB_USER]:[DB_PASS]@[DB_HOST]:[DB_PORT]/[DB_NAME]
 
 ## Running full solution with docker-compose
 
-First you have to get an API ID from the service providing the exchange rates. Please visit [currencyconverterapi](https://free.currencyconverterapi.com/) in order to get your API ID.
+First, you have to get an API ID from the service providing the exchange rates. Please visit [currencyconverterapi](https://free.currencyconverterapi.com/) in order to get your API ID.
 
 
 Second, before you run the entire solution via docker-compose, please create an `.env` file in the root folder containing the following variables:
@@ -50,11 +72,11 @@ SQL_HOST=db
 SQL_PORT=[DB_PORT]
 
 
-# Template for the Currency Service API
+# Template for the Currency Service API. Do not change this variable!
 CURRENCY_API_URL_TEMPLATE=https://free.currconv.com/api/v7/convert?q={}_{}&compact=ultra&apiKey={}
 # The ID you got from the API service explained before
 CURRENCY_API_ID=[The ID you got from the API service explained before]
-# this is the time period for the periodic task executed by celery worker
+# this is the time period(in seconds) for the periodic task executed by celery worker
 PERIODIC_TASK_PERIOD=240
 
 # RabbitMQ credentials & URL
