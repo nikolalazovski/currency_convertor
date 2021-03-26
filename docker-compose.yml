@@ -10,6 +10,8 @@ services:
       - 5000:5000
     env_file:
       - ./.env.dev
+    depends_on:
+      - db
 
   broker-rabbitmq:
     image: "rabbitmq:3.7.14-management"
@@ -22,16 +24,47 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - ./.env.dev
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 
   celery-worker:
     build:
       context: .
-      dockerfile: kiwi_currency/Dockerfile
+      dockerfile: kiwi_currency/tasks/Dockerfile
     command: celery -A kiwi_currency.tasks.worker worker --loglevel=INFO -B
     env_file:
       - ./.env.dev
     depends_on:
       - broker-rabbitmq
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000
+    volumes:
+      - ./monitoring/grafana/config.ini:/etc/grafana/grafana.ini
+      - ./monitoring/grafana/datasource.yaml:/etc/grafana/provisioning/datasources/default.yaml
+      - ./monitoring/grafana/dashboard.yaml:/etc/grafana/provisioning/dashboards/default.yaml
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    env_file:
+      - ./.env.dev
 
 volumes:
   postgres_data:

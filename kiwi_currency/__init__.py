@@ -6,11 +6,13 @@ from flask.cli import with_appcontext
 from flask_sqlalchemy import SQLAlchemy
 
 from kiwi_currency.tinycache import TinyCache
+from prometheus_flask_exporter import PrometheusMetrics
 
-__version__ = (1, 0, 6, "dev")
+__version__ = (1, 0, 7, "dev")
 
 db = SQLAlchemy()
 cache = TinyCache()
+metrics = PrometheusMetrics.for_app_factory()
 
 
 def get_env(key, default_value):
@@ -56,6 +58,7 @@ def create_app(test_config=None):
 
     # initialize Flask-SQLAlchemy and the init-db command
     db.init_app(app)
+    metrics.init_app(app)
     app.cli.add_command(init_db_command)
 
     # default handler in case the service is not found
@@ -77,6 +80,11 @@ def init_db():
     """
     db.drop_all()
     db.create_all()
+    db.session.commit()
+
+    from kiwi_currency.currency.models import update_conversion_rates
+
+    update_conversion_rates()
 
 
 @click.command("init-db")
