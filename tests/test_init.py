@@ -22,7 +22,10 @@ def test_db_url_environ_absent(monkeypatch):
     """
     Test absence of DATABASE_URL environment variable.
     """
-    monkeypatch.delenv("DATABASE_URL")
+    try:
+        monkeypatch.delenv("DATABASE_URL")
+    except:
+        pass
     app = create_app()
     assert "kiwi_currency.sqlite" in app.config["SQLALCHEMY_DATABASE_URI"]
 

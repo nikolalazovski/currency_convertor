@@ -1,14 +1,13 @@
-"""
-    TODO: Implement logging with config from the application
-    TODO: Implement method init_app. See https://flask.palletsprojects.com/en/1.1.x/extensiondev/
-"""
-
 import functools
 import threading
 from time import time
 
 
 def synchronized(wrapped):
+    """
+    Wrapper to make a method synchronized
+    or therad safe.
+    """
     lock = threading.Lock()
 
     @functools.wraps(wrapped)
@@ -20,33 +19,84 @@ def synchronized(wrapped):
 
 
 class TinyCache:
+    """
+    Used as a in-memory cache with expiration
+    period for the cache records.
+    """
+
     def __init__(self):
-        self._default_expiry = 7 * 24 * 60 * 60
+
+        # init of the cache with empty dict
         self._cache = {}
 
     @synchronized
-    def set(self, key, value, expiry=None):
-        expiry = expiry if expiry is not None else self._default_expiry
-        self._cache[key] = {
-            "value": value,
-            "expiry": int(time()) + expiry if expiry else 0,
-        }
+    def set(self, key, value, expiry=None, absolute=True):
+        """
+        Method to set a value in the cache.
+
+        Parameters
+        ----------
+        key : string
+            The key for the cache record
+        value : any
+            The value for the cache record
+        expiry : integer
+            Number of seconds
+        absolute : bool
+            If the expiration period is absolute or relative.
+
+        """
+        if expiry is None:
+            expiry_time = 0
+        else:
+            expiry_time = int(expiry) + int(not absolute) * int(time())
+
+        self._cache[key] = {"value": value, "expiry": expiry_time}
 
     @synchronized
     def invalidate(self, key):
+        """
+        Method to invalidate a cache entry.
+
+        Parameters
+        ----------
+        key : string
+            The cache key
+
+        """
         self._cache.pop(key, None)
 
     @synchronized
     def invalidate_all(self):
+        """
+        Method to clear the cache.
+        """
         self._cache = {}
 
     @synchronized
     def get(self, key):
+        """
+        Method to get the value of certain cache record
+        by the key.
+        If key is found inside the cache, we also check the
+        expiration time. In case of expired cache, we invalidate the cache.
+
+        Parameters
+        ----------
+        key : string
+            The cache key
+
+        Returns
+        -------
+        any
+            The value stored for the key.
+            If not found or not valid, None is returned.
+        """
         if key not in self._cache:
             return None
 
         record = self._cache.get(key)
-        expiry_time = record.get("expiry")
+        expiry_time = record.get("expiry", 0)
         if 0 < expiry_time < int(time()):
             self.invalidate(key)
             return None

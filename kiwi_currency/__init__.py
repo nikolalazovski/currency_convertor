@@ -26,12 +26,18 @@ def create_app(test_config=None):
 
     # default configuration for the app
     default_config = {
+        # can be used in case of sessions
         "SECRET_KEY": get_env("SECRET_KEY", "dev"),
+        # database URI
         "SQLALCHEMY_DATABASE_URI": get_env("DATABASE_URL", None),
         "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+        # the template for the API currency exchange rates call
         "CURRENCY_APP_TEMPLATE": get_env("CURRENCY_API_URL_TEMPLATE", ""),
+        # API ID given by the service
         "CURRENCY_API_ID": get_env("CURRENCY_API_ID", ""),
+        # the period to refresh the currency exchange rates
         "PERIODIC_TASK_PERIOD": float(get_env("PERIODIC_TASK_PERIOD", 24 * 60 * 60)),
+        # broker url needed for the celery worker
         "broker_url": get_env("CELERY_BROKER_URL", "amqp://guest@localhost//"),
     }
 

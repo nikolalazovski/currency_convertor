@@ -4,40 +4,36 @@ services:
   web:
     build:
       context: .
-      dockerfile: kiwi_currency/Dockerfile
-    command: gunicorn -w 4 -b 0.0.0.0:5000 kiwi_currency.wsgi:app
+      dockerfile: ${DOCKER_FILE}
+    command: /bin/sh -c "/usr/src/app/entrypoint.sh"
     ports:
       - 5000:5000
     env_file:
-      - ./.env.dev
+      - ./.env
     depends_on:
       - db
 
   broker-rabbitmq:
     image: "rabbitmq:3.7.14-management"
     env_file:
-      - ./.env.dev
+      - ./.env
 
   db:
     image: postgres:12-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
-      - ./.env.dev
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
+      - ./.env
+    depends_on:
+      - broker-rabbitmq
 
   celery-worker:
     build:
       context: .
-      dockerfile: kiwi_currency/tasks/Dockerfile
+      dockerfile: ${DOCKER_FILE}
     command: celery -A kiwi_currency.tasks.worker worker --loglevel=INFO -B
     env_file:
-      - ./.env.dev
+      - ./.env
     depends_on:
       - broker-rabbitmq
 
@@ -64,7 +60,7 @@ services:
       - ./monitoring/grafana/dashboard.yaml:/etc/grafana/provisioning/dashboards/default.yaml
       - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
     env_file:
-      - ./.env.dev
+      - ./.env
 
 volumes:
   postgres_data:

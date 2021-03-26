@@ -8,6 +8,9 @@ WORKDIR /usr/src/app
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
+# install nc
+RUN apt-get update && apt-get install -y netcat
+
 # upgrade pip
 RUN pip install --upgrade pip
 
@@ -16,5 +19,3 @@ COPY ./requirements.txt /usr/src/app/requirements.txt
 RUN pip install -r requirements.txt
 
 COPY . /usr/src/app/
-
-ENTRYPOINT ["/usr/src/app/kiwi_currency/entrypoint.sh"]

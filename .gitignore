@@ -14,5 +14,5 @@ build/
 *.egg-info/
 
 celerybeat-schedule
-.env.dev
+.env*
 .vscode/
