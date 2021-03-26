@@ -31,6 +31,8 @@ packaging==20.9
 pathspec==0.8.1
 pluggy==0.13.1
 pre-commit==2.11.1
+prometheus-client==0.9.0
+prometheus-flask-exporter==0.18.1
 prompt-toolkit==3.0.17
 psycopg2==2.8.6
 py==1.10.0
