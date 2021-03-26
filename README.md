@@ -9,10 +9,10 @@ To run service locally for development purposes (without the other services), do
 ```bash
 $ python3 -m venv env
 $ source env/bin/activate
-(env) $ pip install -r requirements.txt
+(env) $ pip install -r requirements-dev.txt
 (env) $ export FLASK_APP=kiwi_currency
 (env) $ export FLASK_ENV=development
-(env) $ flask init-db-dev
+(env) $ flask init-db
 (env) $ flask run
 ```
 
@@ -25,9 +25,12 @@ For example, if you have a postgres database, then the `DATABASE_URL` should be 
 DATABASE_URL=postgresql://[DB_USER]:[DB_PASS]@[DB_HOST]:[DB_PORT]/[DB_NAME]
 ```
 
-## Running full solution
+## Running full solution with docker-compose
 
-Before you run the entire solution via docker-compose, please create an `.env` file containing the following variables:
+First you have to get an API ID from the service providing the exchange rates. Please visit [currencyconverterapi](https://free.currencyconverterapi.com/) in order to get your API ID.
+
+
+Second, before you run the entire solution via docker-compose, please create an `.env` file containing the following variables:
 
 ```bash
 FLASK_APP=kiwi_currency
@@ -54,8 +57,24 @@ CURRENCY_API_ID=[The ID you got from the API service explained before]
 # this is the time period for the periodic task executed by celery worker
 PERIODIC_TASK_PERIOD=240
 
+# RabbitMQ credentials & URL
 RABBITMQ_DEFAULT_USER=[RABBITMQ_USER]
 RABBITMQ_DEFAULT_PASS=[RABBITMQ_PASS]
 CELERY_BROKER_URL=amqp://[RABBITMQ_USER]:[RABBITMQ_PASS]@broker-rabbitmq//
 
+```
+
+To run the entire solution, run:
+
+```bash
+docker-compose up -d --build
+```
+
+You can access the REST API service through [http://localhost:5000], and the Grafana monitoring instance through [http://localhost:3000].
+
+
+To get all the containers stopped, run:
+
+```bash
+docker-compose down -v
 ```
