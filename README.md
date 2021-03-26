@@ -30,7 +30,7 @@ DATABASE_URL=postgresql://[DB_USER]:[DB_PASS]@[DB_HOST]:[DB_PORT]/[DB_NAME]
 First you have to get an API ID from the service providing the exchange rates. Please visit [currencyconverterapi](https://free.currencyconverterapi.com/) in order to get your API ID.
 
 
-Second, before you run the entire solution via docker-compose, please create an `.env` file containing the following variables:
+Second, before you run the entire solution via docker-compose, please create an `.env` file in the root folder containing the following variables:
 
 ```bash
 FLASK_APP=kiwi_currency
@@ -70,7 +70,7 @@ To run the entire solution, run:
 docker-compose up -d --build
 ```
 
-You can access the REST API service through [http://localhost:5000], and the Grafana monitoring instance through [http://localhost:3000].
+You can access the REST API service through [http://localhost:5000](http://localhost:5000), and the Grafana monitoring instance through [http://localhost:3000](http://localhost:3000).
 
 
 To get all the containers stopped, run:
