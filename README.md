@@ -54,7 +54,7 @@ There are two architectures considered:
 
 ## Running the dev API REST service locally
 
-To run service locally (not necessarily with other services), do the following in the folder where you have cloned this repository (Note: You can populate your database with real exchange currencies if you perdorm the first step of the section [Running full solution with docker compose](#running-full-solution-with-docker-compose) and export the env variables `CURRENCY_API_URL_TEMPLATE` and `CURRENCY_API_ID`):
+To run service locally (not necessarily with other services), do the following in the folder where you have cloned this repository (Note: You can populate your database with real exchange currency rates if you perform the first step of the section [Running full solution with docker compose](#running-full-solution-with-docker-compose) and export the env variables `CURRENCY_API_URL_TEMPLATE` and `CURRENCY_API_ID`):
 
 ```bash
 $ python3 -m venv env
