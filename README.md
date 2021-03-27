@@ -4,7 +4,35 @@ This project is an implemntation of a currency converter service.
 
 ## REST API Definitions
 
+There are two REST endpoints that the service exposes:
 
+```http
+GET /
+```
+
+This endpoint will return a list the currencies supported by the service.
+
+```javascript
+{
+  "data" : list
+}
+```
+
+The second endpoint is the endpoint to perform conversion from one currency rate to another.
+
+```http
+GET,POST /convert/<string:from_currency>/<string:to_currency>/<amount>
+```
+
+The response of this endpoint:
+
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `from_currency` | `string` | **Required**. The origin currency |
+| `to_currency` | `string` | **Required**. The target currency |
+| `amount` | `float` | **Required**. The original amount that was sent by the client |
+| `converted` | `float` | **Required**. The amount converted in the target currency |
 
 ## Possible architectures
 
@@ -26,7 +54,7 @@ There are two architectures considered:
 
 ## Running the dev API REST service locally
 
-To run service locally (not necessarily with other services), do the following in the folder where you have cloned this repository:
+To run service locally (not necessarily with other services), do the following in the folder where you have cloned this repository (Note: You can populate your database with real exchange currencies if you perdorm the first step of the section [Running full solution with docker compose](##running-full-solution-with-docker-compose) and export the env variables `CURRENCY_API_URL_TEMPLATE` and `CURRENCY_API_ID`):
 
 ```bash
 $ python3 -m venv env
@@ -38,7 +66,7 @@ $ source env/bin/activate
 (env) $ flask run
 ```
 
-Keep in mind that this will leave the default sqlite database with no exchange rates records.
+Keep in mind that this will leave the default `sqlite` database with no exchange rates records.
 If you want to connect to a different database system, please define the `DATABASE_URL` env variable.
 
 For example, if you have a postgres database, then the `DATABASE_URL` should be defined as:
@@ -47,7 +75,7 @@ For example, if you have a postgres database, then the `DATABASE_URL` should be 
 DATABASE_URL=postgresql://[DB_USER]:[DB_PASS]@[DB_HOST]:[DB_PORT]/[DB_NAME]
 ```
 
-## Running full solution with docker-compose
+## Running full solution with docker compose
 
 First, you have to get an API ID from the service providing the exchange rates. Please visit [currencyconverterapi](https://free.currencyconverterapi.com/) in order to get your API ID.
 
