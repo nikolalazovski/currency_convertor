@@ -37,7 +37,7 @@ The response of this endpoint:
 In case the URL is not valid, or the database does not contain exchange rates, you will get one of the following status codes and errors:
 
 | Status Code | Error |
-| :--- | :--- | :--- |
+| :--- | :--- |
 | `400` | The amount has to be numeric |
 | `400` | The origin currency XYZ is not found! Allowed currencies: ... |
 | `400` | The destination currency XYZ is not found! Allowed currencies: ... |
