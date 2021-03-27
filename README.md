@@ -1,8 +1,8 @@
-# Currency Exchange Rate Service
+# Currency Convertor Service
 
 This project is an implemntation of a currency converter service.
 
-## REST API Definitions
+## REST API Definition
 
 There are two REST endpoints that the service exposes:
 
