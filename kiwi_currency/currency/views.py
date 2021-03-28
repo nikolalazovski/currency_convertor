@@ -1,13 +1,7 @@
-import datetime
-
 from flask import Blueprint, current_app, request
 
 from kiwi_currency import cache
-from kiwi_currency.currency.models import (
-    ConversionRate,
-    allowed_currencies,
-    financial_multiplication,
-)
+from kiwi_currency.currency.models import ConversionRate, allowed_currencies
 
 bp = Blueprint("currency", __name__)
 
@@ -67,35 +61,17 @@ def convert(from_currency, to_currency, amount):
         )
 
     # checking the in-memory cache for stored values that are not expired
-    cache_key = f"{from_currency}_{to_currency}"
-    rate = cache.get(cache_key)
+    converted_amount = ConversionRate().convert_amount(
+        from_currency, to_currency, amount, cache
+    )
 
-    if rate is None:
-        # if no cached value is found,
-        # we read the valid value from the database and set the cache
-        exchange_rate = ConversionRate.query.filter_by(
-            from_currency=from_currency, to_currency=to_currency, latest=1
-        ).first()
-
-        if exchange_rate:
-            rate = exchange_rate.rate
-            # the cache is set depending on the PERIODIC_TASK_PERIOD
-            # that defines the celery cycle for reading the new
-            # exchange rates
-            delta = datetime.timedelta(
-                seconds=current_app.config["PERIODIC_TASK_PERIOD"]
-            )
-            # the cache is valid until TIME IT WAS CREATED + PERIODIC_TASK_PERIOD
-            expiry_time = int((exchange_rate.created + delta).timestamp())
-            cache.set(cache_key, rate, expiry_time)
-
-    if rate:
+    if converted_amount:
         # we return the converted amount
         return {
             "from_currency": from_currency,
             "to_currency": to_currency,
             "amount": float(amount),
-            "converted": float(financial_multiplication(amount, rate)),
+            "converted": float(converted_amount),
         }
 
     # This error will appear in case of an empty database

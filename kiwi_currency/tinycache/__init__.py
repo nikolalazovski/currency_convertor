@@ -1,6 +1,6 @@
 import functools
 import threading
-from time import time
+from datetime import datetime
 
 
 def synchronized(wrapped):
@@ -16,6 +16,10 @@ def synchronized(wrapped):
             return wrapped(*args, **kwargs)
 
     return _wrap
+
+
+def utc_epoch():
+    return int(datetime.utcnow().timestamp())
 
 
 class TinyCache:
@@ -49,7 +53,7 @@ class TinyCache:
         if expiry is None:
             expiry_time = 0
         else:
-            expiry_time = int(expiry) + int(not absolute) * int(time())
+            expiry_time = int(expiry) + int(not absolute) * utc_epoch()
 
         self._cache[key] = {"value": value, "expiry": expiry_time}
 
@@ -97,7 +101,8 @@ class TinyCache:
 
         record = self._cache.get(key)
         expiry_time = record.get("expiry", 0)
-        if 0 < expiry_time < int(time()):
+
+        if 0 < expiry_time and expiry_time < utc_epoch():
             self.invalidate(key)
             return None
         else:

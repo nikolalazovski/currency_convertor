@@ -4,13 +4,7 @@ import pytest
 import requests
 
 from kiwi_currency import cache, db
-from kiwi_currency.currency.models import (
-    ConversionRate,
-    allowed_currencies,
-    financial_multiplication,
-    get_conversion_rate,
-    update_conversion_rates,
-)
+from kiwi_currency.currency.models import ConversionRate, allowed_currencies
 
 
 def test_root_path(client, app):
@@ -79,7 +73,7 @@ def test_convert_success_integer_value(client, app):
     ],
 )
 def test_financial_multiplication(a, b, result):
-    assert financial_multiplication(a, b) == result
+    assert ConversionRate.financial_multiplication(a, b) == result
 
 
 @pytest.mark.parametrize(
@@ -99,7 +93,6 @@ def test_wrong_currencies_and_amount(client, path, text_in_error):
 
 def test_check_conversion_rate_repr(app):
     with app.app_context():
-        print(id(app))
         obj_repr = repr(
             ConversionRate.query.filter_by(
                 from_currency="PLN", to_currency="CZK", latest=1
@@ -131,7 +124,7 @@ def test_non_existent_service(client):
 
 
 def test_conversion_rate_equal_currencies():
-    res = get_conversion_rate("USD", "USD")
+    res = ConversionRate.get_conversion_rate("USD", "USD")
     assert res == 1.0
 
 
@@ -147,7 +140,7 @@ def test_conversion_rate_different_currencies(app, monkeypatch):
 
     with app.app_context():
         monkeypatch.setattr("requests.get", mock_requests_get_method)
-        assert get_conversion_rate("EUR", "PLN") == 2.36
+        assert ConversionRate.get_conversion_rate("EUR", "PLN") == 2.36
 
 
 def test_conversion_rate_connection_error(app, monkeypatch):
@@ -157,7 +150,7 @@ def test_conversion_rate_connection_error(app, monkeypatch):
     with app.app_context():
         monkeypatch.setattr("requests.get", mock_requests_get_method)
         with pytest.raises(requests.exceptions.ConnectionError):
-            get_conversion_rate("EUR", "PLN")
+            ConversionRate.get_conversion_rate("EUR", "PLN")
 
 
 def test_conversion_rate_timeout(app, monkeypatch):
@@ -167,7 +160,7 @@ def test_conversion_rate_timeout(app, monkeypatch):
     with app.app_context():
         monkeypatch.setattr("requests.get", mock_requests_get_method)
         with pytest.raises(requests.exceptions.ConnectTimeout):
-            get_conversion_rate("EUR", "PLN")
+            ConversionRate.get_conversion_rate("EUR", "PLN")
 
 
 def test_update_conversion_rates_success(app, monkeypatch):
@@ -184,10 +177,11 @@ def test_update_conversion_rates_success(app, monkeypatch):
             "kiwi_currency.currency.models.allowed_currencies", new_allowed_currencies
         )
         monkeypatch.setattr(
-            "kiwi_currency.currency.models.get_conversion_rate", new_get_conversion_rate
+            "kiwi_currency.currency.models.ConversionRate.get_conversion_rate",
+            new_get_conversion_rate,
         )
 
-        res = update_conversion_rates()
+        res = ConversionRate.update_conversion_rates()
         assert res["success"] == 1
         assert res["data"] == expected_rates
 
@@ -220,10 +214,11 @@ def test_update_conversion_rates_fail(app, monkeypatch):
             "kiwi_currency.currency.models.allowed_currencies", new_allowed_currencies
         )
         monkeypatch.setattr(
-            "kiwi_currency.currency.models.get_conversion_rate", new_get_conversion_rate
+            "kiwi_currency.currency.models.ConversionRate.get_conversion_rate",
+            new_get_conversion_rate,
         )
 
-        res = update_conversion_rates()
+        res = ConversionRate.update_conversion_rates()
 
         assert res["success"] == 0
         assert res["data"] == {"USD_USD": 1.0, "USD_EUR": 0.33, "EUR_USD": 1.77}
@@ -235,3 +230,32 @@ def test_update_conversion_rates_fail(app, monkeypatch):
         ).first()
 
         assert db_res_before.rate == db_res_after.rate
+
+
+def test_convert_amount(app):
+
+    with app.app_context():
+        # case when the cache is empty; data is read from the database
+        converted_amount = ConversionRate().convert_amount("EUR", "USD", "1.234", cache)
+        assert Decimal("1.472755554") == converted_amount
+
+        # case when the cache is not empty; data is read from the cache
+        converted_amount = ConversionRate().convert_amount("EUR", "USD", "1.234", cache)
+        assert Decimal("1.472755554") == converted_amount
+
+        # case when there is no conversipon rate in the database, neither in cache; None is reaturned
+        ConversionRate.query.filter_by(
+            from_currency="EUR", to_currency="USD", latest=1
+        ).delete()
+        db.session.commit()
+        cache.invalidate_all()
+
+        converted_amount = ConversionRate().convert_amount("EUR", "USD", "1.234", cache)
+        assert converted_amount is None
+
+
+def test_no_cache_convert_amount(app):
+    with app.app_context():
+        # case when the cache is empty; data is read from the database
+        converted_amount = ConversionRate().convert_amount("EUR", "USD", "1.234")
+        assert Decimal("1.472755554") == converted_amount

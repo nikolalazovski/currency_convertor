@@ -84,6 +84,13 @@ For example, if you have a postgres database, then the `DATABASE_URL` should be 
 DATABASE_URL=postgresql://[DB_USER]:[DB_PASS]@[DB_HOST]:[DB_PORT]/[DB_NAME]
 ```
 
+To run the test and show the code coverage results, execute the following commands:
+
+```bash
+$ coverage run -m pytest
+$ coverage report -m
+```
+
 ## Running full solution with docker compose
 
 First, you have to get an API ID from the service providing the exchange rates. Please visit [currencyconverterapi](https://free.currencyconverterapi.com/) in order to get your API ID.

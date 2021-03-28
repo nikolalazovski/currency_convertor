@@ -4,6 +4,7 @@ from datetime import datetime
 import pytest
 
 from kiwi_currency import cache, create_app, db, init_db
+from kiwi_currency.currency.models import ConversionRate
 from kiwi_currency.tinycache import TinyCache
 
 with open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb") as f:
@@ -14,15 +15,25 @@ with open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb") as f:
 def app():
     """Create and configure a new app instance for each test."""
     # create the app with common test config
-    app = create_app({"TESTING": True, "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:"})
+    app = create_app(
+        {
+            "TESTING": True,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "PERIODIC_TASK_PERIOD": 240,
+        }
+    )
 
     # create the database and load test data
     with app.app_context():
-        init_db()
+        init_db(real_data=False)
 
         for sql_insert in _data_sql.split(";"):
             db.session.execute(sql_insert)
             db.session.commit()
+
+        # update the records as been created in this moment
+        db.session.query(ConversionRate).filter().update({"created": datetime.utcnow()})
+        db.session.commit()
 
         cache.invalidate_all()
 
@@ -41,7 +52,7 @@ def appwsgi():
 
     # create the database and load test data
     with wsgiapp.app_context():
-        init_db()
+        init_db(real_data=False)
 
         for sql_insert in _data_sql.split(";"):
             db.session.execute(sql_insert)

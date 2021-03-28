@@ -80,17 +80,13 @@ def create_app(test_config=None):
     return app
 
 
-def init_db():
+def init_db(real_data=True):
     """
     Method to initialize the database.
     """
     db.drop_all()
     db.create_all()
     db.session.commit()
-
-    from kiwi_currency.currency.models import update_conversion_rates
-
-    update_conversion_rates()
 
 
 @click.command("init-db")
@@ -100,4 +96,7 @@ def init_db_command():
     Clear existing data and create new tables.
     """
     init_db()
+    from kiwi_currency.currency.models import ConversionRate
+
+    ConversionRate.update_conversion_rates()
     click.echo("Initialized the database.")

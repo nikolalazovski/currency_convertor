@@ -14,7 +14,7 @@ import os
 
 from celery.schedules import crontab
 
-from kiwi_currency.currency.models import update_conversion_rates
+from kiwi_currency.currency.models import ConversionRate
 from kiwi_currency.tasks import create_celery
 
 celery_app = create_celery()
@@ -34,4 +34,4 @@ def setup_periodic_tasks(sender, **kwargs):
 
 @celery_app.task(name="update_currency_rates_in_db")
 def update():
-    return update_conversion_rates()
+    return ConversionRate.update_conversion_rates()
