@@ -55,7 +55,9 @@ There are two architectures considered:
     * Prometheus as a monitoring database
     * Grafana as a monitoring dashboard service using the Prometheus as a data source
 
+
 ![First Solution Architecture](https://github.com/nikolalazovski/currency_convertor/blob/main/images/diagram.png)
+
 
 - Second solution based in AWS (TO BE DONE!)
     * API Gateway for REST API
