@@ -1,6 +1,6 @@
 from celery import Celery
 
-from kiwi_currency import create_app
+from currency_convertor import create_app
 
 
 def create_celery(app=None):

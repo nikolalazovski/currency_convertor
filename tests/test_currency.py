@@ -3,8 +3,8 @@ from decimal import Decimal
 import pytest
 import requests
 
-from kiwi_currency import cache, db
-from kiwi_currency.currency.models import ConversionRate, allowed_currencies
+from currency_convertor import cache, db
+from currency_convertor.currency.models import ConversionRate, allowed_currencies
 
 
 def test_root_path(client, app):
@@ -174,10 +174,11 @@ def test_update_conversion_rates_success(app, monkeypatch):
     with app.app_context():
 
         monkeypatch.setattr(
-            "kiwi_currency.currency.models.allowed_currencies", new_allowed_currencies
+            "currency_convertor.currency.models.allowed_currencies",
+            new_allowed_currencies,
         )
         monkeypatch.setattr(
-            "kiwi_currency.currency.models.ConversionRate.get_conversion_rate",
+            "currency_convertor.currency.models.ConversionRate.get_conversion_rate",
             new_get_conversion_rate,
         )
 
@@ -211,10 +212,11 @@ def test_update_conversion_rates_fail(app, monkeypatch):
         ).first()
 
         monkeypatch.setattr(
-            "kiwi_currency.currency.models.allowed_currencies", new_allowed_currencies
+            "currency_convertor.currency.models.allowed_currencies",
+            new_allowed_currencies,
         )
         monkeypatch.setattr(
-            "kiwi_currency.currency.models.ConversionRate.get_conversion_rate",
+            "currency_convertor.currency.models.ConversionRate.get_conversion_rate",
             new_get_conversion_rate,
         )
 

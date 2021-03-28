@@ -2,7 +2,7 @@
     Celery worker is started with the following command
     after we export the variables for celery configuration
 
-        celery -A kiwi_currency.tasks.worker worker --loglevel=INFO -B
+        celery -A currency_convertor.tasks.worker worker --loglevel=INFO -B
 
     The service used to fetch the currency exchange rates is:
 
@@ -14,8 +14,8 @@ import os
 
 from celery.schedules import crontab
 
-from kiwi_currency.currency.models import ConversionRate
-from kiwi_currency.tasks import create_celery
+from currency_convertor.currency.models import ConversionRate
+from currency_convertor.tasks import create_celery
 
 celery_app = create_celery()
 

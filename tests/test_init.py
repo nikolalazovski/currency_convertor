@@ -1,4 +1,4 @@
-from kiwi_currency import create_app
+from currency_convertor import create_app
 
 
 def test_config():
@@ -27,7 +27,7 @@ def test_db_url_environ_absent(monkeypatch):
     except:
         pass
     app = create_app()
-    assert "kiwi_currency.sqlite" in app.config["SQLALCHEMY_DATABASE_URI"]
+    assert "currency_convertor.sqlite" in app.config["SQLALCHEMY_DATABASE_URI"]
 
 
 def test_init_db_command(runner, monkeypatch):
@@ -41,7 +41,7 @@ def test_init_db_command(runner, monkeypatch):
     def fake_init_db():
         Recorder.called = True
 
-    monkeypatch.setattr("kiwi_currency.init_db", fake_init_db)
+    monkeypatch.setattr("currency_convertor.init_db", fake_init_db)
     result = runner.invoke(args=["init-db"])
     assert "Initialized" in result.output
     assert Recorder.called

@@ -31,7 +31,7 @@ services:
     build:
       context: .
       dockerfile: ${DOCKER_FILE}
-    command: celery -A kiwi_currency.tasks.worker worker --loglevel=INFO -B
+    command: celery -A currency_convertor.tasks.worker worker --loglevel=INFO -B
     env_file:
       - ./.env
     depends_on:

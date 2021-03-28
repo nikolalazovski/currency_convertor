@@ -1,6 +1,6 @@
 import time
 
-from kiwi_currency.tinycache import TinyCache, utc_epoch
+from currency_convertor.tinycache import TinyCache, utc_epoch
 
 
 def test_expiry_time():

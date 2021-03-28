@@ -5,7 +5,7 @@ from flask import Flask
 from flask.cli import with_appcontext
 from flask_sqlalchemy import SQLAlchemy
 
-from kiwi_currency.tinycache import TinyCache
+from currency_convertor.tinycache import TinyCache
 from prometheus_flask_exporter import PrometheusMetrics
 
 __version__ = (1, 0, 7, "dev")
@@ -47,7 +47,7 @@ def create_app(test_config=None):
     # In case the database is not defined, we create a sqlite db
     if default_config["SQLALCHEMY_DATABASE_URI"] is None:
         # default to a sqlite database in the instance folder
-        db_path = os.path.join(app.instance_path, "kiwi_currency.sqlite")
+        db_path = os.path.join(app.instance_path, "currency_convertor.sqlite")
         default_config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
         # ensure the instance folder exists
         os.makedirs(app.instance_path, exist_ok=True)
@@ -73,7 +73,7 @@ def create_app(test_config=None):
         return {"error": "Service not found"}, 404
 
     # apply the blueprints to the app
-    from kiwi_currency import currency
+    from currency_convertor import currency
 
     app.register_blueprint(currency.bp)
 
@@ -96,7 +96,7 @@ def init_db_command():
     Clear existing data and create new tables.
     """
     init_db()
-    from kiwi_currency.currency.models import ConversionRate
+    from currency_convertor.currency.models import ConversionRate
 
     ConversionRate.update_conversion_rates()
     click.echo("Initialized the database.")

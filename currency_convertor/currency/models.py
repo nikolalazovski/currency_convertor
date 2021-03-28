@@ -6,7 +6,7 @@ import requests
 from flask import current_app
 from flask_sqlalchemy.model import DefaultMeta
 
-from kiwi_currency import db
+from currency_convertor import db
 
 # Allowed currencies into the system
 # TODO: These currencies can be defined through an ENV variable

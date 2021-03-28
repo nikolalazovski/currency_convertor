@@ -69,7 +69,7 @@ To run service locally (not necessarily with other services), do the following i
 $ python3 -m venv env
 $ source env/bin/activate
 (env) $ pip install -r requirements-dev.txt
-(env) $ export FLASK_APP=kiwi_currency
+(env) $ export FLASK_APP=currency_convertor
 (env) $ export FLASK_ENV=development
 (env) $ flask init-db
 (env) $ flask run
@@ -99,12 +99,12 @@ First, you have to get an API ID from the service providing the exchange rates. 
 Second, before you run the entire solution via docker-compose, please create an `.env` file in the root folder containing the following variables:
 
 ```bash
-FLASK_APP=kiwi_currency
+FLASK_APP=currency_convertor
 # production - the REST API will run through gunicorn wsgi
 # development - the app will run with 'flask run'
 FLASK_ENV=< production | development >
 # Either file can be used, one is used for dev and the other is production optimized
-DOCKER_FILE=< kiwi_currency/Dockerfile | kiwi_currency/Dockerfile.prod >
+DOCKER_FILE=< currency_convertor/Dockerfile | currency_convertor/Dockerfile.prod >
 
 # Database credentials & variables
 DATABASE=postgres

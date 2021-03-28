@@ -15,7 +15,7 @@ flask init-db
 
 if [ "$FLASK_ENV" = "production" ]
 then
-    gunicorn -w 4 -b 0.0.0.0:5000 kiwi_currency.wsgi:app
+    gunicorn -w 4 -b 0.0.0.0:5000 currency_convertor.wsgi:app
 else
     flask run -h 0.0.0.0
 fi

@@ -1,7 +1,7 @@
 from flask import Blueprint, current_app, request
 
-from kiwi_currency import cache
-from kiwi_currency.currency.models import ConversionRate, allowed_currencies
+from currency_convertor import cache
+from currency_convertor.currency.models import ConversionRate, allowed_currencies
 
 bp = Blueprint("currency", __name__)
 

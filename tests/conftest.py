@@ -3,9 +3,9 @@ from datetime import datetime
 
 import pytest
 
-from kiwi_currency import cache, create_app, db, init_db
-from kiwi_currency.currency.models import ConversionRate
-from kiwi_currency.tinycache import TinyCache
+from currency_convertor import cache, create_app, db, init_db
+from currency_convertor.currency.models import ConversionRate
+from currency_convertor.tinycache import TinyCache
 
 with open(os.path.join(os.path.dirname(__file__), "data.sql"), "rb") as f:
     _data_sql = f.read().decode("utf8")
@@ -43,7 +43,7 @@ def app():
 @pytest.fixture
 def appwsgi():
     """Create and configure a new app instance for each test."""
-    from kiwi_currency.wsgi import app as wsgiapp
+    from currency_convertor.wsgi import app as wsgiapp
 
     # create the app with common test config
     wsgiapp = create_app(
