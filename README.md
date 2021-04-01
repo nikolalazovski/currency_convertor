@@ -148,3 +148,20 @@ To get all the containers stopped, run:
 ```bash
 docker-compose down -v
 ```
+
+## AWS Solution
+
+In order to run the AWS solution you have to configure first [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) and then install [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install-linux.html)
+
+Then execute the following lines:
+
+```bash
+$ cd aws
+$ sam build
+$ sam deploy --guided --parameter-overrides CurrencyApiId=<API_ID>
+```
+
+### TO-DO
+
+- Testing
+- Local dev environment
