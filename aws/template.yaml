@@ -69,13 +69,8 @@ Resources:
 
 Outputs:
   CurrencyConversionApi:
-    Description: >
-      API Gateway endpoint URL for
-      Prod stage for Hello World function"
-
-    Value: !Sub >
-      https://${ServerlessRestApi}.execute-api.${AWS::Region}.
-      amazonaws.com/Prod/convert/<from>/<to>/<amount>
+    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/convert/<from>/<to>/<amount>"
   CurrencyConversionFunction:
     Description: "Hello World Lambda Function ARN"
     Value: !GetAtt CurrencyConversionFunction.Arn
