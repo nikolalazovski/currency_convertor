@@ -1,0 +1,79 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  currency_convertor
+
+  Example app for currency convertor in AWS
+
+Globals:
+  Function:
+    Timeout: 300
+
+Parameters:
+  CurrencyApiId:
+    Type: String
+    Default: "XYZ"
+
+Resources:
+  CurrencyConversionFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: currency_convertor/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Events:
+        HelloWorld:
+          Type: Api
+          Properties:
+            Path: /convert/{from_currency}/{to_currency}/{amount}
+            Method: get
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ConversionRateTable
+
+  UpdateRatesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.lambda_handler_task
+      Runtime: python3.8
+      CodeUri: currency_convertor/
+      Environment:
+        Variables:
+          CURRENCY_API_ID: !Ref CurrencyApiId
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ConversionRateTable
+      Events:
+        StartScheduledEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(5 * * * ? *)
+
+  ConversionRateTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: conversion_rate
+      AttributeDefinitions:
+        - AttributeName: conversion_pair
+          AttributeType: S
+        - AttributeName: created
+          AttributeType: S
+      KeySchema:
+        - AttributeName: conversion_pair
+          KeyType: HASH
+        - AttributeName: created
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 1
+
+Outputs:
+  CurrencyConversionApi:
+    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/convert/<from>/<to>/<amount>"
+  CurrencyConversionFunction:
+    Description: "Hello World Lambda Function ARN"
+    Value: !GetAtt CurrencyConversionFunction.Arn
+  CurrencyConversionIamRole:
+    Description: "Implicit IAM Role created for Hello World function"
+    Value: !GetAtt CurrencyConversionFunctionRole.Arn
