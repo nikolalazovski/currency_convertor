@@ -13,6 +13,12 @@ Parameters:
   CurrencyApiId:
     Type: String
     Default: "XYZ"
+  SnsTopicName:
+    Type: String
+    Default: "Admin-Currency-Rates-Update-Messages"
+  AdminEmail:
+    Type: String
+    Default: "nikola.lazovski@gmail.com"
 
 Resources:
   CurrencyConversionFunction:
@@ -40,14 +46,17 @@ Resources:
       Environment:
         Variables:
           CURRENCY_API_ID: !Ref CurrencyApiId
+          SNS_ARN: !Ref SnsAdminTopic
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref ConversionRateTable
+        - SNSPublishMessagePolicy:
+            TopicName: !Ref SnsTopicName
       Events:
         StartScheduledEvent:
           Type: Schedule
           Properties:
-            Schedule: cron(5 * * * ? *)
+            Schedule: cron(0/5 * * * ? *)
 
   ConversionRateTable:
     Type: AWS::DynamoDB::Table
@@ -66,6 +75,21 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 1
+
+  SnsAdminTopic:
+    Type: "AWS::SNS::Topic"
+    Properties:
+      TopicName: !Ref SnsTopicName
+      # Subscription:
+      #   - Protocol: email
+      #     Endpoint: !Ref AdminEmail
+
+  AdminSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Endpoint: !Ref AdminEmail
+      Protocol: email
+      TopicArn: !Ref SnsAdminTopic
 
 Outputs:
   CurrencyConversionApi:
