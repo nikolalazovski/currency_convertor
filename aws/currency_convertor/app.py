@@ -9,6 +9,7 @@ import boto3
 from boto3.dynamodb.conditions import Key
 
 currency_api_id = os.getenv("CURRENCY_API_ID", "")
+sns_topic_arn = os.getenv("SNS_ARN", "")
 currency_api_query_template = (
     "https://free.currconv.com/api/v7/convert?q={}_{}&compact=ultra&apiKey={}"
 )
@@ -139,6 +140,26 @@ def get_conversion_rate(curr1, curr2):
         raise e
 
 
+def send_sns_mail_for_rates_update(data):
+    sns_client = boto3.client("sns")
+
+    message_date = str(datetime.utcnow())
+    success_status_text = "SUCCESS" if data.get("success", 0) == 1 else "FAIL"
+
+    return sns_client.publish(
+        TargetArn=sns_topic_arn,
+        Message=json.dumps(
+            {
+                "default": json.dumps(data),
+                # "sms": "here a short version of the message",
+                # "email": "here a longer version of the message",
+            }
+        ),
+        Subject=f"{success_status_text}::Currency Exchange Rates Update on {message_date}",
+        MessageStructure="json",
+    )
+
+
 def lambda_handler_task(event, context):
     """
     Main lambda method to update the conversion rates.
@@ -166,12 +187,15 @@ def lambda_handler_task(event, context):
 
     except Exception as e:
         # in case something goes wrong we rollback => the old excahnge rates will be used
-        # TODO: Send SNS message to admin in case some of the requests/db fail
-        return {
+        res = {
             "success": 0,
             "error": str(e),
             "data": conversion_rates,
         }
+        send_sns_mail_for_rates_update(res)
+        return res
 
     # return all conversion rates
-    return {"success": 1, "data": conversion_rates}
+    res = {"success": 1, "data": conversion_rates}
+    send_sns_mail_for_rates_update(res)
+    return res
