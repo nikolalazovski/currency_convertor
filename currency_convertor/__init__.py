@@ -98,5 +98,9 @@ def init_db_command():
     init_db()
     from currency_convertor.currency.models import ConversionRate
 
-    ConversionRate.update_conversion_rates()
+    res = ConversionRate.update_conversion_rates()
+
+    click.echo("Result of database update:")
+    click.echo("-------------------------------------")
+    click.echo(res)
     click.echo("Initialized the database.")

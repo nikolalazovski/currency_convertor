@@ -163,7 +163,7 @@ class ConversionRate(BaseModel):
             # we read each exchange rate in a separate API call
             for c1 in allowed_currencies:
                 for c2 in allowed_currencies:
-                    rate = ConversionRate.get_conversion_rate(c1, c2)
+                    rate = str(ConversionRate.get_conversion_rate(c1, c2))
                     new_rate = ConversionRate(
                         from_currency=c1, to_currency=c2, rate=rate
                     )
