@@ -75,6 +75,9 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 1
+      TimeToLiveSpecification:
+        AttributeName: expiry_time
+        Enabled: true
 
   SnsAdminTopic:
     Type: "AWS::SNS::Topic"
