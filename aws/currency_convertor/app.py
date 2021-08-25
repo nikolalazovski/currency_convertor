@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 
 import requests
@@ -173,14 +173,14 @@ def lambda_handler_task(event, context):
         for c1 in allowed_currencies:
             for c2 in allowed_currencies:
                 rate = str(get_conversion_rate(c1, c2))
-                # new_rate = ConversionRate(from_currency=c1, to_currency=c2, rate=rate)
-                # # writing the new rates into the database with latest = 2
-                # db.session.add(new_rate)
+                # we also set the TTL expiry_time to be 10 days after creation
+                utcnow = datetime.utcnow()
                 table.put_item(
                     Item={
                         "conversion_pair": f"{c1}_{c2}",
-                        "created": str(datetime.utcnow()),
+                        "created": str(utcnow),
                         "rate": rate,
+                        "expiry_time": int((utcnow + timedelta(days=10)).timestamp()),
                     }
                 )
                 conversion_rates[f"{c1}_{c2}"] = rate
